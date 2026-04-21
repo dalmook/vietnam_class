@@ -1,11 +1,13 @@
 import { LessonCard } from '../components/LessonCard';
 import { useLearningStore } from '../store/learningStore';
+import { isLessonLocked } from '../utils/lessonProgress';
 import { getLessonDataset } from '../utils/lessonData';
 
 const { lessons } = getLessonDataset();
 
 export function HomePage() {
   const lessonProgress = useLearningStore((state) => state.lessonProgress);
+  const completedLessons = useLearningStore((state) => state.completedLessons);
 
   return (
     <section className="space-y-4">
@@ -16,14 +18,19 @@ export function HomePage() {
       </header>
 
       <div className="space-y-3">
-        {lessons.map((lesson, index) => (
-          <LessonCard
-            key={lesson.lessonId}
-            lesson={lesson}
-            progress={lessonProgress[lesson.lessonId] ?? 0}
-            isLocked={index > 0 && (lessonProgress[lessons[index - 1].lessonId] ?? 0) < 100}
-          />
-        ))}
+        {lessons.map((lesson) => {
+          const locked = isLessonLocked(lesson.lessonId, lessons, completedLessons);
+
+          return (
+            <LessonCard
+              key={lesson.lessonId}
+              lesson={lesson}
+              progress={lessonProgress[lesson.lessonId] ?? 0}
+              isLocked={locked}
+              isCompleted={completedLessons.includes(lesson.lessonId)}
+            />
+          );
+        })}
       </div>
     </section>
   );
