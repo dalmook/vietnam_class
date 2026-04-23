@@ -15,10 +15,18 @@ GitHub Pages에 배포되는 **정적 베트남어 학습 웹앱**입니다.
 - 완료 판정 로직(2/3 규칙) 연결
 
 ## 왜 빈 화면이 떴는가?
+대표 증상: 브라우저 콘솔에 `Failed to load resource: 404 main.tsx`가 표시되고 화면이 공백으로 남음.
+
 기존 배포에서 발생 가능한 핵심 원인:
 1. `dist`가 아닌 소스 루트가 정적 노출되면 브라우저가 TS/TSX 소스를 직접 실행하지 못함
 2. 저장소 하위 경로(`/vietnam_class/`)와 Vite `base`가 맞지 않으면 JS/CSS 경로가 깨짐
 3. Pages Source가 브랜치 정적 노출로 되어 있으면 빌드 산출물 관리가 불안정해질 수 있음
+
+
+### 404 main.tsx 빠른 점검
+- Pages Source가 `Deploy from a branch`로 되어 있으면 소스 `index.html`이 직접 노출될 수 있습니다.
+- 이 경우 `/src/main.tsx` 또는 `main.tsx` 경로가 깨지거나 TSX 원본 실행 실패로 공백 화면이 발생합니다.
+- 반드시 `GitHub Actions` 소스로 전환하고, Actions가 `dist`를 배포하도록 유지하세요.
 
 ### 해결 방식
 - Vite production base를 `/vietnam_class/`로 명시
